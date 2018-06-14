@@ -9,6 +9,10 @@ namespace ImageSearchEngine
 {
     class ImageOperations
     {
+        public static Bitmap Resize(int width, Bitmap bitmap)
+        {
+            return new Bitmap(bitmap, new Size(width, bitmap.Height * width / bitmap.Width));
+        }
         public static Bitmap rgb2gray(Bitmap original)
         {
             //make an empty bitmap the same size as original
@@ -29,16 +33,20 @@ namespace ImageSearchEngine
 
                     //set the new image's pixel to the grayscale version
                     newBitmap.SetPixel(i, j, newColor);
+
+                    if (SearchOperation.cancelled)
+                        return newBitmap;
                 }
             }
             return newBitmap;
         }
 
         //Gets 256-deminisoin LBP descriptor
-        public double[] LBP_Descriptor(Bitmap bitmap)
+        public static double[] LBP_Descriptor(Bitmap bitmap)
         {
+            bitmap = new Bitmap(bitmap, new Size(128, bitmap.Height * 128 / bitmap.Width));
             //LBP descriptor is 128 vector of histogram values
-            double[] lbp_hist = new double[128];
+            double[] lbp_hist = new double[256];
 
             //for simplicity, ignore corner pixels for now.
 
@@ -74,6 +82,9 @@ namespace ImageSearchEngine
 
                     //count in histogram
                     lbp_hist[value]++;
+
+                    if (SearchOperation.cancelled)
+                        return lbp_hist;
                 }
             }
             //Normalize histogram
@@ -84,17 +95,19 @@ namespace ImageSearchEngine
             }
             return lbp_hist;
         }
-        public double dotProduct(double[] descriptor1, double[] descriptor2)
+        public static double dotProduct(double[] descriptor1, double[] descriptor2)
         {
             double product = 0;
             double magAsq = 0, magBsq = 0;
-            for (int i = 0; i < 256; i++)
+            for (int i = 0; i < descriptor1.Length; i++)
             {
                 product += descriptor1[i] * descriptor2[i];
                 magAsq += descriptor1[i] * descriptor1[i];
                 magBsq += descriptor2[i] * descriptor2[i];
+                if (SearchOperation.cancelled)
+                    return 0;
             }
-            return product/(Math.Sqrt(magAsq)*Math.Sqrt(magBsq));
+            return product / (Math.Sqrt(magAsq) * Math.Sqrt(magBsq));
         }
     }
 }

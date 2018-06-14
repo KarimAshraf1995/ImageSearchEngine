@@ -33,8 +33,6 @@
             this.ImageLocation = new System.Windows.Forms.TextBox();
             this.ImageSetLocation = new System.Windows.Forms.TextBox();
             this.ImageBrowse_button = new System.Windows.Forms.Button();
-            this.ImageLoad_button = new System.Windows.Forms.Button();
-            this.FolderLoad_button = new System.Windows.Forms.Button();
             this.FolderBrowse_button = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.guessLabel = new System.Windows.Forms.Label();
@@ -79,6 +77,7 @@
             this.ImageLocation.Name = "ImageLocation";
             this.ImageLocation.Size = new System.Drawing.Size(656, 20);
             this.ImageLocation.TabIndex = 2;
+            this.ImageLocation.TextChanged += new System.EventHandler(this.ImageLocation_TextChanged);
             // 
             // ImageSetLocation
             // 
@@ -86,6 +85,7 @@
             this.ImageSetLocation.Name = "ImageSetLocation";
             this.ImageSetLocation.Size = new System.Drawing.Size(656, 20);
             this.ImageSetLocation.TabIndex = 3;
+            this.ImageSetLocation.TextChanged += new System.EventHandler(this.ImageSetLocation_TextChanged);
             // 
             // ImageBrowse_button
             // 
@@ -96,25 +96,6 @@
             this.ImageBrowse_button.Text = "Browse";
             this.ImageBrowse_button.UseVisualStyleBackColor = true;
             this.ImageBrowse_button.Click += new System.EventHandler(this.ImageBrowse_button_Click);
-            // 
-            // ImageLoad_button
-            // 
-            this.ImageLoad_button.Location = new System.Drawing.Point(831, 13);
-            this.ImageLoad_button.Name = "ImageLoad_button";
-            this.ImageLoad_button.Size = new System.Drawing.Size(75, 23);
-            this.ImageLoad_button.TabIndex = 5;
-            this.ImageLoad_button.Text = "Load";
-            this.ImageLoad_button.UseVisualStyleBackColor = true;
-            this.ImageLoad_button.Click += new System.EventHandler(this.ImageLoad_button_Click);
-            // 
-            // FolderLoad_button
-            // 
-            this.FolderLoad_button.Location = new System.Drawing.Point(831, 46);
-            this.FolderLoad_button.Name = "FolderLoad_button";
-            this.FolderLoad_button.Size = new System.Drawing.Size(75, 23);
-            this.FolderLoad_button.TabIndex = 7;
-            this.FolderLoad_button.Text = "Load";
-            this.FolderLoad_button.UseVisualStyleBackColor = true;
             // 
             // FolderBrowse_button
             // 
@@ -147,7 +128,7 @@
             // 
             // StartButton
             // 
-            this.StartButton.Location = new System.Drawing.Point(927, 27);
+            this.StartButton.Location = new System.Drawing.Point(937, 48);
             this.StartButton.Name = "StartButton";
             this.StartButton.Size = new System.Drawing.Size(75, 23);
             this.StartButton.TabIndex = 14;
@@ -180,6 +161,7 @@
             this.OriginalpictureBox.Location = new System.Drawing.Point(6, 48);
             this.OriginalpictureBox.Name = "OriginalpictureBox";
             this.OriginalpictureBox.Size = new System.Drawing.Size(498, 351);
+            this.OriginalpictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.OriginalpictureBox.TabIndex = 10;
             this.OriginalpictureBox.TabStop = false;
             // 
@@ -198,7 +180,7 @@
             // 
             this.MatchAcc.AutoSize = true;
             this.MatchAcc.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MatchAcc.Location = new System.Drawing.Point(442, 16);
+            this.MatchAcc.Location = new System.Drawing.Point(379, 16);
             this.MatchAcc.Name = "MatchAcc";
             this.MatchAcc.Size = new System.Drawing.Size(0, 25);
             this.MatchAcc.TabIndex = 15;
@@ -218,6 +200,7 @@
             this.MatchedBox1.Location = new System.Drawing.Point(5, 48);
             this.MatchedBox1.Name = "MatchedBox1";
             this.MatchedBox1.Size = new System.Drawing.Size(464, 351);
+            this.MatchedBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.MatchedBox1.TabIndex = 13;
             this.MatchedBox1.TabStop = false;
             // 
@@ -230,9 +213,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.FolderLoad_button);
             this.Controls.Add(this.FolderBrowse_button);
-            this.Controls.Add(this.ImageLoad_button);
             this.Controls.Add(this.ImageBrowse_button);
             this.Controls.Add(this.ImageSetLocation);
             this.Controls.Add(this.ImageLocation);
@@ -262,8 +243,6 @@
         private System.Windows.Forms.TextBox ImageLocation;
         private System.Windows.Forms.TextBox ImageSetLocation;
         private System.Windows.Forms.Button ImageBrowse_button;
-        private System.Windows.Forms.Button ImageLoad_button;
-        private System.Windows.Forms.Button FolderLoad_button;
         private System.Windows.Forms.Button FolderBrowse_button;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label guessLabel;

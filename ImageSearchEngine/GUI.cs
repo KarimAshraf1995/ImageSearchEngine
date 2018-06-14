@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,37 +43,27 @@ namespace ImageSearchEngine
             }
         }
 
-        private void ImageLoad_button_Click(object sender, EventArgs e)
-        {
-            if (System.IO.File.Exists(ImageLocation.Text))
-            {
-                OriginalpictureBox.ImageLocation = ImageLocation.Text;
-            }
-            else
-            {
-                MessageBox.Show("Invalid file location");
-            }
-        }
         private void done()
         {
             StartButton.Text = "Start";
             started = false;
             ImageLocation.Enabled = true;
             ImageSetLocation.Enabled = true;
-            ImageLoad_button.Enabled = true;
-            FolderLoad_button.Enabled = true;
+            ImageBrowse_button.Enabled = true;
+            FolderBrowse_button.Enabled = true;
         }
         public void ImageCompared(string image, double score)
         {
-            MatchedBox1.ImageLocation = ImageSetLocation + "/" + image;
+            MatchedBox1.ImageLocation = image;
             MatchAcc.Text = score.ToString("P2");
         }
 
-        public void FinalMatch(string image,string guess,double score)
+        public void FinalMatch(string image, string guess, double score)
         {
-            MatchedBox1.ImageLocation = ImageSetLocation + "/" + image;
+            MatchedBox1.ImageLocation = image;
             MatchAcc.Text = score.ToString("P2");
             guessLabel.Text = guess;
+            done();
         }
         private void StartButton_Click(object sender, EventArgs e)
         {
@@ -80,15 +71,42 @@ namespace ImageSearchEngine
             {
                 ImageLocation.Enabled = false;
                 ImageSetLocation.Enabled = false;
-                ImageLoad_button.Enabled = false;
-                FolderLoad_button.Enabled = false;
+                ImageBrowse_button.Enabled = false;
+                FolderBrowse_button.Enabled = false;
                 StartButton.Text = "Stop";
                 started = true;
+                new Task(() => { SearchOperation.StartOperation(this, ImageLocation.Text, ImageSetLocation.Text); }).Start();
             }
             else
             {
-
+                SearchOperation.cancelled = true;
                 done();
+            }
+        }
+
+        private void ImageLocation_TextChanged(object sender, EventArgs e)
+        {
+            if (File.Exists(ImageLocation.Text))
+            {
+                OriginalpictureBox.ImageLocation = ImageLocation.Text;
+                ImageLocation.BackColor = Color.White;
+            }
+            else
+            {
+                OriginalpictureBox.ImageLocation = null;
+                ImageLocation.BackColor = Color.LightPink;
+            }
+        }
+
+        private void ImageSetLocation_TextChanged(object sender, EventArgs e)
+        {
+            if (Directory.Exists(ImageSetLocation.Text))
+            {
+                ImageSetLocation.BackColor = Color.White;
+            }
+            else
+            {
+                ImageSetLocation.BackColor = Color.LightPink;
             }
         }
     }
