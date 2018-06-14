@@ -41,60 +41,8 @@ namespace ImageSearchEngine
             return newBitmap;
         }
 
-        //Gets 256-deminisoin LBP descriptor
-        public static double[] LBP_Descriptor(Bitmap bitmap)
-        {
-            bitmap = new Bitmap(bitmap, new Size(128, bitmap.Height * 128 / bitmap.Width));
-            //LBP descriptor is 128 vector of histogram values
-            double[] lbp_hist = new double[256];
-
-            //for simplicity, ignore corner pixels for now.
-
-            for (int i = 1; i < bitmap.Width - 1; i++)
-            {
-                for (int j = 1; j < bitmap.Height - 1; j++)
-                {
-                    byte value = 0;
-                    //Left-middle pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i - 1, j).R))
-                        value |= 0x01;
-                    //Left-top pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i - 1, j - 1).R))
-                        value |= 0x01 << 1;
-                    //top pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i, j - 1).R))
-                        value |= 0x01 << 2;
-                    //Right-top pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i + 1, j - 1).R))
-                        value |= 0x01 << 3;
-                    //Right-middle pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i + 1, j).R))
-                        value |= 0x01 << 4;
-                    //Right-bottom pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i + 1, j + 1).R))
-                        value |= 0x01 << 5;
-                    //bottom pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i, j + 1).R))
-                        value |= 0x01 << 6;
-                    //Left-bottom pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i - 1, j + 1).R))
-                        value |= 0x01 << 7;
-
-                    //count in histogram
-                    lbp_hist[value]++;
-
-                    if (SearchOperation.cancelled)
-                        return lbp_hist;
-                }
-            }
-            //Normalize histogram
-            int size = bitmap.Width * bitmap.Height;
-            for (int i = 0; i < 256; i++)
-            {
-                lbp_hist[i] = lbp_hist[i] / size;
-            }
-            return lbp_hist;
-        }
+        //Returns the value of cosine the angle between the 2 vectors
+        //Larger value indicates higher similarity between the 2 vectors
         public static double dotProduct(double[] descriptor1, double[] descriptor2)
         {
             double product = 0;
@@ -108,6 +56,21 @@ namespace ImageSearchEngine
                     return 0;
             }
             return product / (Math.Sqrt(magAsq) * Math.Sqrt(magBsq));
+        }
+
+
+        public static double ManhattanDistance(double[] descriptor1, double[] descriptor2)
+        {
+            double difference = 0;
+
+            for (int i = 0; i < descriptor1.Length; i++)
+            {
+                difference += Math.Abs(descriptor1[i] - descriptor2[i]);
+
+                if (SearchOperation.cancelled)
+                    return 0;
+            }
+            return difference;
         }
     }
 }

@@ -90,11 +90,16 @@ namespace ImageSearchEngine
             {
                 OriginalpictureBox.ImageLocation = ImageLocation.Text;
                 ImageLocation.BackColor = Color.White;
+                if(Directory.Exists(ImageSetLocation.Text))
+                    StartButton.Enabled = true;
+                else
+                    StartButton.Enabled = false;
             }
             else
             {
                 OriginalpictureBox.ImageLocation = null;
                 ImageLocation.BackColor = Color.LightPink;
+                StartButton.Enabled = false;
             }
         }
 
@@ -103,10 +108,15 @@ namespace ImageSearchEngine
             if (Directory.Exists(ImageSetLocation.Text))
             {
                 ImageSetLocation.BackColor = Color.White;
+                if (File.Exists(ImageLocation.Text))
+                    StartButton.Enabled = true;
+                else
+                    StartButton.Enabled = false;
             }
             else
             {
                 ImageSetLocation.BackColor = Color.LightPink;
+                StartButton.Enabled = false;
             }
         }
     }

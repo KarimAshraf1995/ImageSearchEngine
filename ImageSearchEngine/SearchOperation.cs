@@ -17,12 +17,16 @@ namespace ImageSearchEngine
                 return;
             if (!File.Exists(image))
                 return;
+
             cancelled = false;
-            const int common_width = 256;
+            const int common_width = 128;
+
+            IDescriptor descriptor= new LBPDescriptor();
+
             Dictionary<string, string> labels = new Dictionary<string, string>();
-            double[] image_descriptor = ImageOperations.LBP_Descriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(image))));
+            double[] image_descriptor = descriptor.GetDescriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(image))));
             double[] other_image;
-            double max_score = 0, score = 0;
+            double max_score = double.MinValue, score = 0;
             string max_score_file = "", guess = "";
 
             foreach (string filename in Directory.EnumerateFiles(set_path, "*.csv"))
@@ -31,8 +35,8 @@ namespace ImageSearchEngine
             }
             foreach (string filename in Directory.EnumerateFiles(set_path, "*.jpg"))
             {
-                other_image = ImageOperations.LBP_Descriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename))));
-                score = ImageOperations.dotProduct(image_descriptor, other_image);
+                other_image = descriptor.GetDescriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename))));
+                score = ImageOperations.ManhattanDistance(image_descriptor, other_image);
                 if (cancelled) return;
                 gui.Invoke(new Action<string, double>(gui.ImageCompared), filename, score);
                 if (score > max_score)
@@ -43,8 +47,8 @@ namespace ImageSearchEngine
             }
             foreach (string filename in Directory.EnumerateFiles(set_path, "*.png"))
             {
-                other_image = ImageOperations.LBP_Descriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width,new System.Drawing.Bitmap(filename))));
-                score = ImageOperations.dotProduct(image_descriptor, other_image);
+                other_image = descriptor.GetDescriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename))));
+                score = ImageOperations.ManhattanDistance(image_descriptor, other_image);
                 if (cancelled) return;
                 gui.Invoke(new Action<string, double>(gui.ImageCompared), filename, score);
                 if (score > max_score)
