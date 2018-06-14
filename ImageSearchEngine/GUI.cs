@@ -67,6 +67,7 @@ namespace ImageSearchEngine
         }
         private void StartButton_Click(object sender, EventArgs e)
         {
+            guessLabel.Text = "";
             if (!started)
             {
                 ImageLocation.Enabled = false;

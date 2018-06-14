@@ -12,53 +12,64 @@ namespace ImageSearchEngine
         //Gets 256-dimension LBP descriptor
         public double[] GetDescriptor(Bitmap bitmap)
         {
-            bitmap = new Bitmap(bitmap, new Size(128, bitmap.Height * 128 / bitmap.Width));
+            var newBitmap = (bitmap);
             //LBP descriptor is 128 vector of histogram values
-            double[] lbp_hist = new double[256];
+            double[] lbp_hist = new double[256 * 3];
+            int[,] im_matrix = new int[newBitmap.Width, newBitmap.Height];
+
+            for (int i = 0; i < newBitmap.Width; i++)
+            {
+                for (int j = 0; j < newBitmap.Height; j++)
+                {
+                    im_matrix[i, j] = newBitmap.GetPixel(i, j).ToArgb();
+                }
+            }
 
 
             //Compare 8 neighbours of each pixel with it, if larger set the corresponding bit 
             //for simplicity, ignore corner pixels for now.
-            for (int i = 1; i < bitmap.Width - 1; i++)
+            for (int i = 1; i < newBitmap.Width - 1; i++)
             {
-                for (int j = 1; j < bitmap.Height - 1; j++)
+                for (int j = 1; j < newBitmap.Height - 1; j++)
                 {
-                    byte value = 0;
-                    //Left-middle pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i - 1, j).R))
-                        value |= 0x01;
-                    //Left-top pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i - 1, j - 1).R))
-                        value |= 0x01 << 1;
-                    //top pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i, j - 1).R))
-                        value |= 0x01 << 2;
-                    //Right-top pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i + 1, j - 1).R))
-                        value |= 0x01 << 3;
-                    //Right-middle pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i + 1, j).R))
-                        value |= 0x01 << 4;
-                    //Right-bottom pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i + 1, j + 1).R))
-                        value |= 0x01 << 5;
-                    //bottom pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i, j + 1).R))
-                        value |= 0x01 << 6;
-                    //Left-bottom pixel
-                    if ((bitmap.GetPixel(i, j).R < bitmap.GetPixel(i - 1, j + 1).R))
-                        value |= 0x01 << 7;
 
-                    //count in histogram
-                    lbp_hist[value]++;
+                    int current = im_matrix[i, j];//Current pixel value
+                    int[] neighbours = {    //Current pixels 8 neighbours starting left pixel moving in clockwise 
+                        im_matrix[i - 1, j],          //Left-middle pixel
+                        im_matrix[i - 1, j - 1],      //Left-top pixel
+                        im_matrix[i, j - 1],          //top pixel
+                        im_matrix[i + 1, j - 1],      //Right-top pixel
+                        im_matrix[i + 1, j],          //Right-middle pixel
+                        im_matrix[i + 1, j + 1],      //Right-bottom pixel
+                        im_matrix[i, j + 1],          //bottom pixel
+                        im_matrix[i - 1, j + 1]       //Left-bottom pixel
+                    };
+
+                    for (int M = 0; M < 3; M++)//For three colors
+                    {
+                        byte value = 0;     //8 bit value for current color
+                        byte bit = 0x01;    //current bit to be set if condition is met
+                        int color_mask = 0x000000FF;    //current coloe to check
+
+
+                        for (int N = 0; N < 8; N++)//For 8 neighbours
+                        {
+                            if ((current & color_mask) < (neighbours[N] & color_mask))
+                                value |= bit;
+                            bit <<= 1; //Next bit 
+                        }
+                        color_mask <<= 8; //Next color
+
+                        lbp_hist[M * 256 + value]++; //count for current color in histogram
+                    }
 
                     if (SearchOperation.cancelled)
                         return lbp_hist;
                 }
             }
             //Normalize histogram
-            int size = bitmap.Width * bitmap.Height;
-            for (int i = 0; i < 256; i++)
+            int size = newBitmap.Width * newBitmap.Height;
+            for (int i = 0; i < lbp_hist.Length; i++)
             {
                 lbp_hist[i] = lbp_hist[i] / size;
             }

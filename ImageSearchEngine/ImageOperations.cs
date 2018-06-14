@@ -13,10 +13,10 @@ namespace ImageSearchEngine
         {
             return new Bitmap(bitmap, new Size(width, bitmap.Height * width / bitmap.Width));
         }
-        public static Bitmap rgb2gray(Bitmap original)
+        public static byte[,] rgb2gray(Bitmap original)
         {
             //make an empty bitmap the same size as original
-            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
+            byte[,] newBitmap = new byte[original.Width, original.Height];
 
             for (int i = 0; i < original.Width; i++)
             {
@@ -26,13 +26,11 @@ namespace ImageSearchEngine
                     Color originalColor = original.GetPixel(i, j);
 
                     //create the grayscale version of the pixel
-                    int grayScale = (int)((originalColor.R * .3) + (originalColor.G * .59) + (originalColor.B * .11));
+                    byte grayScale = (byte)((originalColor.R * .3) + (originalColor.G * .59) + (originalColor.B * .11));
 
-                    //create the color object
-                    Color newColor = Color.FromArgb(grayScale, grayScale, grayScale);
 
                     //set the new image's pixel to the grayscale version
-                    newBitmap.SetPixel(i, j, newColor);
+                    newBitmap[i, j] = grayScale;
 
                     if (SearchOperation.cancelled)
                         return newBitmap;
@@ -40,6 +38,24 @@ namespace ImageSearchEngine
             }
             return newBitmap;
         }
+
+        /*
+        public static byte[,,] bitmap2byte(Bitmap bitmap)
+        {
+            byte[,,] rgb_matrix = new byte[bitmap.Width, bitmap.Height, 3];
+
+            for(int i=0;i<bitmap.Width;i++)
+            {
+                for(int j=0;j<bitmap.Height;j++)
+                {
+                    rgb_matrix[i,j,0]=bitmap.get
+                }
+            }
+
+            return rgb_matrix;
+        }
+
+    */
 
         //Returns the value of cosine the angle between the 2 vectors
         //Larger value indicates higher similarity between the 2 vectors

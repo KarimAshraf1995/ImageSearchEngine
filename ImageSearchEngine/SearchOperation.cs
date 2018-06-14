@@ -21,10 +21,10 @@ namespace ImageSearchEngine
             cancelled = false;
             const int common_width = 128;
 
-            IDescriptor descriptor= new LBPDescriptor();
+            IDescriptor descriptor = new LBPDescriptor();
 
             Dictionary<string, string> labels = new Dictionary<string, string>();
-            double[] image_descriptor = descriptor.GetDescriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(image))));
+            double[] image_descriptor = descriptor.GetDescriptor(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(image)));
             double[] other_image;
             double max_score = double.MinValue, score = 0;
             string max_score_file = "", guess = "";
@@ -35,8 +35,8 @@ namespace ImageSearchEngine
             }
             foreach (string filename in Directory.EnumerateFiles(set_path, "*.jpg"))
             {
-                other_image = descriptor.GetDescriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename))));
-                score = ImageOperations.ManhattanDistance(image_descriptor, other_image);
+                other_image = descriptor.GetDescriptor(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename)));
+                score = ImageOperations.dotProduct(image_descriptor, other_image);
                 if (cancelled) return;
                 gui.Invoke(new Action<string, double>(gui.ImageCompared), filename, score);
                 if (score > max_score)
@@ -47,8 +47,8 @@ namespace ImageSearchEngine
             }
             foreach (string filename in Directory.EnumerateFiles(set_path, "*.png"))
             {
-                other_image = descriptor.GetDescriptor(ImageOperations.rgb2gray(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename))));
-                score = ImageOperations.ManhattanDistance(image_descriptor, other_image);
+                other_image = descriptor.GetDescriptor(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename)));
+                score = ImageOperations.dotProduct(image_descriptor, other_image);
                 if (cancelled) return;
                 gui.Invoke(new Action<string, double>(gui.ImageCompared), filename, score);
                 if (score > max_score)
@@ -67,6 +67,16 @@ namespace ImageSearchEngine
         public static Dictionary<string, string> GetSetLabels(string filename)
         {
             Dictionary<string, string> labels = new Dictionary<string, string>();
+            using (StreamReader file = new StreamReader(filename))
+            {
+                while (!file.EndOfStream)
+                {
+                    string line = file.ReadLine();
+                    string[] pair = line.Split(',');
+                    if (pair.Length == 2)
+                        labels[pair[0]] = pair[1];
+                }
+            }
             return labels;
         }
     }
