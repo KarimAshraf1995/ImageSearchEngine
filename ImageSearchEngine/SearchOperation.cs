@@ -19,7 +19,7 @@ namespace ImageSearchEngine
                 return;
 
             cancelled = false;
-            const int common_width = 128;
+            const int common_width = 256;
 
             IDescriptor descriptor = new LBPDescriptor();
 
