@@ -36,7 +36,7 @@ namespace ImageSearchEngine
             foreach (string filename in Directory.EnumerateFiles(set_path, "*.jpg"))
             {
                 other_image = descriptor.GetDescriptor(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename)));
-                score = ImageOperations.dotProduct(image_descriptor, other_image);
+                score = descriptor.Compare(image_descriptor, other_image);
                 if (cancelled) return;
                 gui.Invoke(new Action<string, double>(gui.ImageCompared), filename, score);
                 if (score > max_score)
@@ -48,7 +48,7 @@ namespace ImageSearchEngine
             foreach (string filename in Directory.EnumerateFiles(set_path, "*.png"))
             {
                 other_image = descriptor.GetDescriptor(ImageOperations.Resize(common_width, new System.Drawing.Bitmap(filename)));
-                score = ImageOperations.dotProduct(image_descriptor, other_image);
+                score = descriptor.Compare(image_descriptor, other_image);
                 if (cancelled) return;
                 gui.Invoke(new Action<string, double>(gui.ImageCompared), filename, score);
                 if (score > max_score)

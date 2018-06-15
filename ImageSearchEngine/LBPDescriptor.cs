@@ -74,5 +74,23 @@ namespace ImageSearchEngine
             }
             return lbp_hist;
         }
+
+
+        public double Compare(double[] descriptor1, double[] descriptor2)
+        {
+            //Returns the value of cosine the angle between the 2 vectors
+            //Larger value indicates higher similarity between the 2 vectors
+            double product = 0;
+            double magAsq = 0, magBsq = 0;
+            for (int i = 0; i < Math.Min(descriptor1.Length, descriptor2.Length); i++)
+            {
+                product += descriptor1[i] * descriptor2[i];
+                magAsq += descriptor1[i] * descriptor1[i];
+                magBsq += descriptor2[i] * descriptor2[i];
+                if (SearchOperation.cancelled)
+                    return 0;
+            }
+            return product / (Math.Sqrt(magAsq) * Math.Sqrt(magBsq));
+        }
     }
 }
